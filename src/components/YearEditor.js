@@ -2,51 +2,34 @@ import React from 'react';
 import { Radio } from 'antd';
 import moment from 'moment';
 import Between from './Between';
+import Reg, { index } from './Reg';
+import BaseEditor from './BaseEditor';
+
 const RadioGroup = Radio.Group;
 const MIN_YEAR = moment().year();
-const MAX_YEAR = 3000;
-class YearEditor extends React.Component {
+const MAX_YEAR = 2099;
+
+const defaultRadioKeyValue = {};
+defaultRadioKeyValue[index.EVERY] = '*';
+defaultRadioKeyValue[index.BETWEEN] = `${MIN_YEAR}-${MAX_YEAR}`;
+class YearEditor extends BaseEditor {
   state = {
-    radio: 0,
-    value: [
-      '?',
-      '*',
-      `${MIN_YEAR}-${MAX_YEAR}`
-    ],
-  };
-
-  notifyChange = (radio, value) => {
-    const { onChange } = this.props;
-    onChange && onChange(value);
-  };
-
-  handleRadioChange = ({ target: { value: radio } }) => {
-    const {value} = this.state;
-    this.setState({ radio });
-    this.notifyChange(radio, value[radio]);
-  };
-
-  handleValueChange = (radio, v) => {
-    const {value} = this.state;
-    value[radio] = v;
-    this.setState({ radio, value });
-    this.notifyChange(radio, v);
+    radio: index.EVERY,
+    value: defaultRadioKeyValue,
   };
 
   render() {
-    const { radioStyle } = this.props;
-    const { radio } = this.state;
+    const { radioStyle, value:defaultValue, ...config } = this.props;
+    const { radio, value } = this.state;
 
     return (
       <RadioGroup onChange={this.handleRadioChange} value={radio}>
-        <Radio style={radioStyle} value={0}>
-          不指定
-        </Radio>
-        <Radio style={radioStyle} value={1}>
+        <Reg value={defaultValue} currentIndex={radio} onChange={this.handleRegChange} />
+        <Radio style={radioStyle} value={index.EVERY}>
           每年
         </Radio>
-        <Radio style={radioStyle} value={2}>
-          周期 <Between min={MIN_YEAR} max={MAX_YEAR} onChange={this.handleValueChange.bind(this, 2)} />
+        <Radio style={radioStyle} value={index.BETWEEN}>
+          周期 <Between min={MIN_YEAR} max={MAX_YEAR} value={value[index.BETWEEN]} {...config} onChange={this.handleValueChange.bind(this, index.BETWEEN)} />
         </Radio>
       </RadioGroup>
     );

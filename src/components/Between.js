@@ -1,64 +1,53 @@
 import React from 'react';
-import { Input, InputNumber } from 'antd';
+import { Input } from 'antd';
+import InputNumber from './InputNumber';
 
+const style = { width: 70, textAlign: 'center', paddingRight: '0px', paddingLeft: '0px' };
 const InputGroup = Input.Group;
 
-class Between extends React.Component {
-  state = {};
+const Between = ({ value, onChange, min = 0, max }) => {
+  const splits = value.split('-');
+  const minValue = parseInt(splits[0], 0);
+  const maxValue = parseInt(splits[1], 0);
 
-  handleMinChange = (value) => {
-    const minValue = parseInt(value, 0) || 0;
-    this.setState({ minValue });
+  const notifyChange = (minValue, maxValue) => {
+    const s = `${minValue}-${maxValue}`;
+    onChange && onChange(s);
   };
 
-  handleMaxChange = (value) => {
-    const maxValue = parseInt(value, 0) || 0;
-    this.setState({ maxValue });
+  const handleMinChange = (value) => {
+    notifyChange(value, maxValue);
   };
 
-  handleFix = () => {
-    const { onChange, min = 0, max } = this.props;
-    let { minValue, maxValue } = this.state;
-    if (!minValue) minValue = min;
-    if (!maxValue) maxValue = max;
-    if (minValue > max) minValue = max;
-    if (maxValue < min) maxValue = min;
-    if (maxValue < minValue) maxValue = minValue;
-    this.setState({ minValue, maxValue });
-    onChange && onChange(`${minValue}-${maxValue}`);
+  const handleMaxChange = (value) => {
+    notifyChange(minValue, value);
   };
 
-  render() {
-    const { min = 0, max } = this.props;
-    const { minValue = min, maxValue = max } = this.state;
-    return (
-      <InputGroup compact style={{ display: 'inline-block', verticalAlign: 'middle' }}>
-        <InputNumber
-          style={{ width: 100, textAlign: 'center' }}
-          placeholder="Minimum"
-          min={min}
-          max={maxValue}
-          value={minValue}
-          onBlur={this.handleFix}
-          onChange={this.handleMinChange}
-        />
-        <Input
-          style={{ width: 30, borderLeft: 0, pointerEvents: 'none', backgroundColor: '#fff' }}
-          placeholder="~"
-          disabled
-        />
-        <InputNumber
-          style={{ width: 100, textAlign: 'center', borderLeft: 0 }}
-          placeholder="Maximum"
-          min={minValue}
-          max={max}
-          value={maxValue}
-          onBlur={this.handleFix}
-          onChange={this.handleMaxChange}
-        />
-      </InputGroup>
-    );
-  }
-}
+  return (
+    <InputGroup compact style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: '5px' }}>
+      <InputNumber
+        style={style}
+        placeholder="Minimum"
+        min={min}
+        max={maxValue}
+        value={minValue}
+        onChange={handleMinChange}
+      />
+      <Input
+        style={{ width: 30, borderLeft: 0, pointerEvents: 'none', backgroundColor: '#fff' }}
+        placeholder="~"
+        disabled
+      />
+      <InputNumber
+        style={{...style, borderLeft: 0}}
+        placeholder="Maximum"
+        min={minValue}
+        max={max}
+        value={maxValue}
+        onChange={handleMaxChange}
+      />
+    </InputGroup>
+  );
+};
 
 export default Between;

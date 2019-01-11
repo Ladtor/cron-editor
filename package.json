@@ -1,6 +1,6 @@
 {
   "name": "antd-cron-editor",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "A cron expression generator to be used in React applications",
   "main": "index.js",
   "scripts": {

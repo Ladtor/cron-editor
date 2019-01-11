@@ -1,59 +1,48 @@
 import React from 'react';
-import {InputNumber} from 'antd';
+import InputNumber from './InputNumber';
 
-class WeekDay extends React.Component {
-  state = {
-    week: 1,
-    weekDay: 1
+const inputNumberStyle = {
+  margin: '0 5px',
+};
+
+const WeekDay = ({ value, onChange }) => {
+  const splits = value.split('#');
+  const week = splits[0];
+  const weekDay = splits[1];
+
+  const notifyChange = (week, weekDay) => {
+    const s = `${week}#${weekDay}`;
+    onChange && onChange(s);
   };
 
-  notifyChange = ({week , weekDay} = this.state) => {
-    const {onChange} = this.props;
-    onChange && onChange(`${week}#${weekDay}`);
+  const handleWeekChange = (v) => {
+    notifyChange(v, weekDay);
   };
 
-  handleBlur = () => {
-    this.notifyChange();
+  const handleWeekDayChange = (v) => {
+    notifyChange(week, v);
   };
 
-  handleWeekChange = (v) => {
-    const week = v;
-    this.setState({ week });
-    this.notifyChange({...this.state, week});
-  };
-
-  handleWeekDayChange = (v) => {
-    const weekDay = v;
-    this.setState({ weekDay });
-    this.notifyChange({...this.state, weekDay});
-  };
-
-  render() {
-    const {inputNumberStyle} = this.props;
-
-    return (
-      <span>
-        第
-        <InputNumber
-          min={1}
-          max={4}
-          defaultValue={1}
-          style={inputNumberStyle}
-          onChange={this.handleWeekChange}
-          onBlur={this.handleBlur}
-        />
-        周的星期
-        <InputNumber
-          min={1}
-          max={7}
-          defaultValue={1}
-          style={inputNumberStyle}
-          onChange={this.handleWeekDayChange}
-          onBlur={this.handleBlur}
-        />
-      </span>
-    );
-  }
-}
+  return (
+    <span>
+      第
+      <InputNumber
+        min={1}
+        max={4}
+        style={inputNumberStyle}
+        value={week}
+        onChange={handleWeekChange}
+      />
+      周的星期
+      <InputNumber
+        min={1}
+        max={7}
+        style={inputNumberStyle}
+        value={weekDay}
+        onChange={handleWeekDayChange}
+      />
+    </span>
+  );
+};
 
 export default WeekDay;

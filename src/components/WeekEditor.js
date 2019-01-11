@@ -4,66 +4,54 @@ import Between from './Between';
 import CheckBoxEditor from './CheckBoxEditor';
 import WeekDay from './WeekDay';
 import LastWeekDay from './LastWeekDay';
+import Reg, { index } from './Reg';
+import BaseEditor from './BaseEditor';
 
 const RadioGroup = Radio.Group;
 
-class WeekEditor extends React.Component {
+const defaultRadioKeyValue = {};
+defaultRadioKeyValue[index.EVERY] = '*';
+defaultRadioKeyValue[index.ANY] = '?';
+defaultRadioKeyValue[index.BETWEEN] = '1-2';
+defaultRadioKeyValue[index.WEEK_DAY] = '1#1';
+defaultRadioKeyValue[index.LAST_WEEK_DAY] = '1L';
+defaultRadioKeyValue[index.CHECK_BOX] = '*';
+
+class WeekEditor extends BaseEditor{
   state = {
-    radio: 0,
-    value: [
-      '*',
-      '?',
-      '1-2',
-      '1/1',
-      '1L',
-      '?',
-    ],
-  };
-
-  notifyChange = (radio, value) => {
-    const { onChange } = this.props;
-    onChange && onChange(value);
-  };
-
-  handleRadioChange = ({ target: { value: radio } }) => {
-    const {value} = this.state;
-    this.setState({ radio });
-    this.notifyChange(radio, value[radio]);
-  };
-
-  handleValueChange = (radio, v) => {
-    const {value} = this.state;
-    value[radio] = v;
-    this.setState({ radio, value });
-    this.notifyChange(radio, v);
+    radio: index.EVERY,
+    value: defaultRadioKeyValue,
   };
 
   render() {
-    const { radioStyle } = this.props;
-    const { radio } = this.state;
+    const { radioStyle, value: defaultValue, ...config } = this.props;
+    const { radio, value } = this.state;
 
     return (
       <RadioGroup onChange={this.handleRadioChange} value={radio}>
-        <Radio style={radioStyle} value={0}>
-          每日
+        <Reg value={defaultValue} currentIndex={radio} onChange={this.handleRegChange} />
+        <Radio style={radioStyle} value={index.EVERY}>
+          每周
         </Radio>
-        <Radio style={radioStyle} value={1}>
+        <Radio style={radioStyle} value={index.ANY}>
           不指定
         </Radio>
-        <Radio style={radioStyle} value={2}>
-          周期 <Between min={1} max={7} onChange={this.handleValueChange.bind(this, 2)} />
+        <Radio style={radioStyle} value={index.BETWEEN}>
+          周期 <Between min={1} max={7} value={value[index.BETWEEN]} {...config} onChange={this.handleValueChange.bind(this, index.BETWEEN)} />
         </Radio>
-        <Radio style={radioStyle} value={3}>
+        <Radio style={radioStyle} value={index.WEEK_DAY}>
           <WeekDay
-            onChange={this.handleValueChange.bind(this, 3)}
+            onChange={this.handleValueChange.bind(this, index.WEEK_DAY)}
+            value={value[index.WEEK_DAY]}
+            {...config}
           />
         </Radio>
-        <Radio style={radioStyle} value={4}>
-          本月最后一个星期 <LastWeekDay onChange={this.handleValueChange.bind(this,4)} />
+        <Radio style={radioStyle} value={index.LAST_WEEK_DAY}>
+          本月最后一个星期 <LastWeekDay value={value[index.LAST_WEEK_DAY]} {...config} onChange={this.handleValueChange.bind(this, index.LAST_WEEK_DAY)} />
         </Radio>
-        <Radio style={radioStyle} value={5}>
+        <Radio style={radioStyle} value={index.CHECK_BOX}>
           指定
-          <CheckBoxEditor min={1} max={7} onChange={this.handleValueChange.bind(this, 5)} />
+          <CheckBoxEditor min={1} max={7} value={value[index.CHECK_BOX]} {...config} onChange={this.handleValueChange.bind(this, index.CHECK_BOX)} />
         </Radio>
       </RadioGroup>
     );
